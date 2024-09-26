@@ -30,7 +30,7 @@ def write_task_script(rMATS_path, bam_dir, task_name, gtf, novelSS, task_dir):
 
 def main(args):
 	rMATS_path=args.rMATS_path
-	prep_dir=args.bam_dir.rstrip('/')
+	prep_dir=args.bam_dir.rstrip('/')  # 一级目录，二级目录包含bam文件，
 	gtf=args.gtf
 	task_name=args.data_name
 	novelSS=args.novelSS
