@@ -51,7 +51,7 @@ def kallisto(readsFilesRNA, sampleID ,kallisto_index):
 
 def main(args):
 	# 修改 all_the_way 标志位，创建输出目录，创建日志
-	sampleID=args.sampleID_outdir.rstrip('/')    # 输出文件目录的绝对路径
+	sampleID=args.sampleID_outdir.rstrip('/')    # 输出文件目录的绝对路径，就是STAR输出目录的名称
 	dbLength=args.db_length                      # STAR sjbOverhang 参数,默认是100
 	all_the_way=True
 	if args.mapping or args.quant or args.sort: # 如果 mapping quant sort 有一个参数被设置,那么all_the_way被设置为false
