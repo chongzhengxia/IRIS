@@ -50,10 +50,10 @@ def kallisto(readsFilesRNA, sampleID ,kallisto_index):
 	os.system(cmd_kallisto_mk)
 
 def main(args):
-	sampleID=args.sampleID_outdir.rstrip('/')
-	dbLength=args.db_length
+	sampleID=args.sampleID_outdir.rstrip('/')    # 输出文件目录的绝对路径
+	dbLength=args.db_length                      # STAR sjbOverhang 参数,默认是100
 	all_the_way=True
-	if args.mapping or args.quant or args.sort:
+	if args.mapping or args.quant or args.sort: # 如果 mapping quant sort 有一个参数被设置,那么all_the_way被设置为false
 		all_the_way=False
 
 	os.system('mkdir -p '+sampleID)
@@ -63,11 +63,11 @@ def main(args):
 						filemode='w')
 
 	### STAR
-	if all_the_way or args.mapping:
+	if all_the_way or args.mapping:  # 如果全部都做或者只做mapping 那么运行star
 		logging.debug('[RNA-seq] # Start STAR 2pass alignment.')
 		print '[RNA-seq] # Start STAR 2pass alignment.'
 
-		if os.path.exists(sampleID+'/Aligned.sortedByCoord.out.bam')==False and os.path.exists(sampleID+'/Aligned.out.bam')==False:
+		if os.path.exists(sampleID+'/Aligned.sortedByCoord.out.bam')==False and os.path.exists(sampleID+'/Aligned.out.bam')==False: # 如果不存在这俩文件,不存在与输出目录里，则运行star
 			STAR_alignment(args.readsFilesRNA, args.starGenomeDir, dbLength, sampleID)
 			if os.path.exists(sampleID+'/Aligned.sortedByCoord.out.bam')==False and os.path.exists(sampleID+'/Aligned.out.bam')==False:
 				sys.exit('[RNA-seq] # An Error Occured. STAR Incomplete. Exit!')
@@ -76,7 +76,7 @@ def main(args):
 			print '[RNA-seq] # Skipped STAR 2pass alignment.'
 
 	### samtools sortedByCoord
-	if all_the_way or args.quant or args.sort:
+	if all_the_way or args.quant or args.sort: # 如果全部都做或者只做sort 那么运行samtools
 		logging.debug('[RNA-seq] # Start samtools sortedByCoord.')
 		print '[RNA-seq] # Start samtools sortedByCoord.'
 
