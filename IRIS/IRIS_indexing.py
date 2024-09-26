@@ -2,7 +2,7 @@ import numpy as np
 import os,sys,argparse
 from scipy import stats
 import statsmodels.stats.weightstats as smw
-
+   #index_PsiMatrix(fin,outdir,'\t',splicing_event_type, out_fp)
 def index_PsiMatrix(fn, outdir, delim, splicing_event_type, out_fp):
 	line_formatter =  "{id}\t{offset}\n"
 	offset = 0
