@@ -18,9 +18,9 @@ def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_di
 	out_dir=out_prefix.rstrip('/')+'.aln'                            # out_dir/sample1.aln
 	sample_name=out_dir.split('/')[-1].split('.')[0]                 # sample1
 	task_script_base1 = 'STARmap.{}.sh'.format(sample_name)          # STARmap.sample1.sh
-	task_script1 = os.path.join(task_dir, task_script_base1)         # task_dir/STARmap.sample1.sh
+	task_script1 = os.path.join(task_dir, task_script_base1)         # task_dir/STARmap.sample1.sh  路径名字
 	task_script_base2 = 'Cuffquant.{}.sh'.format(sample_name)        # Cuffquant.sample1.sh
-	task_script2 = os.path.join(task_dir, task_script_base2)         # task_dir/Cuffquant.sample1.sh
+	task_script2 = os.path.join(task_dir, task_script_base2)         # task_dir/Cuffquant.sample1.sh  路径名字
 	fout1=open(task_script1,'w')                                     # 在task目录下创建了 STARmap.sample1.sh 文件
 	fout2=open(task_script2,'w')
 	fq_path=','.join(sorted(r1)+sorted(r2))                          # r1,r2排序，确保每个R1,R2一一对应，最终整合到一个列表里，列表里先是全部的R1,然后是全部的R2
@@ -29,7 +29,7 @@ def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_di
 	fout1.write('#!/bin/bash\n'+cmd1+'\n')
 	cmd2='IRIS process_rnaseq --starGenomeDir '+starGenomeDir+' --gtf '+gtf+' --quant -p '+out_dir+' '+fq_path           # 定量以及检测AS事件
 	fout2.write('#!/bin/bash\n'+cmd2+'\n')
-	return task_script1,task_script2
+	return task_script1,task_script2                  # 为什么需要返回值
 
 def main(args):
 	starGenomeDir=args.starGenomeDir
