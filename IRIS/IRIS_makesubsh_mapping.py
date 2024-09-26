@@ -25,9 +25,9 @@ def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_di
 	fout2=open(task_script2,'w')
 	fq_path=','.join(sorted(r1)+sorted(r2))                          # r1,r2排序，确保每个R1,R2一一对应，最终整合到一个列表里，列表里先是全部的R1,然后是全部的R2
 
-	cmd1='IRIS process_rnaseq --starGenomeDir '+starGenomeDir+' --gtf '+gtf+' --mapping --sort -p '+out_dir+' '+fq_path
+	cmd1='IRIS process_rnaseq --starGenomeDir '+starGenomeDir+' --gtf '+gtf+' --mapping --sort -p '+out_dir+' '+fq_path  # 比对以及排序
 	fout1.write('#!/bin/bash\n'+cmd1+'\n')
-	cmd2='IRIS process_rnaseq --starGenomeDir '+starGenomeDir+' --gtf '+gtf+' --quant -p '+out_dir+' '+fq_path
+	cmd2='IRIS process_rnaseq --starGenomeDir '+starGenomeDir+' --gtf '+gtf+' --quant -p '+out_dir+' '+fq_path           # 定量以及检测AS事件
 	fout2.write('#!/bin/bash\n'+cmd2+'\n')
 	return task_script1,task_script2
 
