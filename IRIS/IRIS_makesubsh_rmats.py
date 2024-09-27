@@ -22,17 +22,18 @@ def writeShell(rMATS_path,              fin_name,    folder_name,     bam_dir, r
 	fout.write('python {} --b1 {}/bam_list.txt --od {} --tmp {}/{}.RL{}/{}.tmp --anchorLength 1 --readLength {} --gtf {} -t paired --task prep --nthread 8 --statoff {}|| true\n'.format(rMATS_path, folder_name, folder_name, bam_dir, task_name, read_length_argument, sample_name, read_length_argument, gtf, novelSS_str))
 	fout.close()
         # 每一个bam文件运行prep关闭statoff统计信息
+                             #      找到的所有的star日志
 def organizeReadLength(rMATS_path, file_list_mapping, gtf, novelSS, bam_prefix, task_name, task_dir):
-	rl_dict={}
-	folder_names={}
+	rl_dict={}           {folder_name:RL}
+	folder_names={}      {RL:''}
 	for fin_name in file_list_mapping:
 		for l in open(fin_name):
 			if l.find('Average input read length |')!=-1:
-				map_rl=int(round(float(l.split('Average input read length |')[-1].strip())/2,0))
-				rl_dict['/'.join(fin_name.split('/')[:-1])]=map_rl
-				folder_names[map_rl]=''
+				map_rl=int(round(float(l.split('Average input read length |')[-1].strip())/2,0))  # 通过日志找到的RL
+				rl_dict['/'.join(fin_name.split('/')[:-1])]=map_rl   {folder_name:RL}
+				folder_names[map_rl]=''                               {RL:''}
 				break
-	bam_dir='/'.join(file_list_mapping[0].split('/')[:-2])
+	bam_dir='/'.join(file_list_mapping[0].split('/')[:-2]) # bam_dir
 	for folder_name in folder_names:
 		os.system('mkdir -p '+bam_dir+'/'+task_name+'.RL'+str(folder_name))
 	for folder_name in rl_dict:
