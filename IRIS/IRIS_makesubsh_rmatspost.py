@@ -1,12 +1,13 @@
 import sys,glob,os,argparse
 from . import config
-
+                          #      star_output1的绝对路径
 def write_task_script(rMATS_path, bam_dir, task_name, gtf, novelSS, task_dir):
+	# 这里的bam_dir是star的输出目录
 	read_length=int(bam_dir.split('/')[-1].split('.')[-1][2:])
 	dir_name=task_name+'_RL'+str(read_length)
 	graphlist=glob.glob(bam_dir+'/*.tmp/*')
 	os.system('mkdir -p '+bam_dir+'/'+dir_name+'.graph')
-	os.system('cp '+bam_dir+'/*.tmp/* '+bam_dir+'/'+dir_name+'.graph/.')
+	os.system('cp '+bam_dir+'/*.tmp/* '+bam_dir+'/'+dir_name+'.graph/.')   # 将task_name.RL150/.tmp文件夹下的所有文件移动到 task_name.RL150/task_name_RL150.graph下
 	print '[INFO] Done copy'
 	cmd='head -n1 -q '+bam_dir+'/'+dir_name+'.graph/*.rmats |paste -d, -s >'+bam_dir+'/'+dir_name+'_rmatspost_list.txt'
 	print cmd
