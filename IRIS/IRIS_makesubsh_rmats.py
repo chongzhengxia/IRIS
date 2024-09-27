@@ -58,8 +58,10 @@ def main(args):
 	else:
 		mapping_bam_list=glob.glob(bam_dir+'/*/'+bam_prefix+'.bam')  # 包含bam文件路径的列表
 		os.system('mkdir -p '+bam_dir+'/'+task_name+'.RL'+str(read_length))
-		for fin_name in mapping_bam_list:
+		for fin_name in mapping_bam_list:   #mapping_bam_list是列表，包含了全部sort后的bam文件的路径
 			folder_name= '/'.join(fin_name.split('/')[:-1]) #bam文件的dirname
+			# a/b/filename fin_name: a/b/filename folder_name: a/b
+			
 			writeShell(rMATS_path, fin_name, folder_name,          bam_dir, str(read_length), gtf, novelSS, task_name, task_dir)
                          # rMATS程序路径       bam文件绝对路径  bam文件dirname    一级目录    
  
