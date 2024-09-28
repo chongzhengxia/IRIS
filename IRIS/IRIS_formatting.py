@@ -1,10 +1,12 @@
 import sys, numpy, argparse, os
-
-def loadSamplelist(fin_samples, sample_fin_list, sample_header, sample_name_field, sample_size):
-	for l in open(fin_samples):
+#                                          []                  []                 1文件或者2目录    {}
+# loadSamplelist(args.rmats_sample_order, sample_fin_list,  sample_header,    sample_name_field, sample_size)
+def loadSamplelist(fin_samples,           sample_fin_list,  sample_header,    sample_name_field, sample_size):
+	for l in open(fin_samples):   # rMATS第一个步骤的输入文件
 		ls=l.strip()
 		sample_fin_list.append(ls)
 		for r in open(ls):
+			#     /PUBLIC/home/xiachongzheng/IRIS/STAR_out/Aligned.sortedByCoord.out.bam 从这里面取出
 			rs=map(lambda x:x.split('/')[-sample_name_field].split('.bam')[0].split('.aln')[0],r.strip().strip(',').split(','))
 			#rs=map(lambda x:x.split('/')[-2],r.strip().strip(',').split(','))
 			if sample_name_field==2:
@@ -222,8 +224,8 @@ def index_PsiMatrix(fn, outdir, delim, splicing_event_type):
 def main(args):
 	cov_cutoff=args.cov_cutoff
 	data_name=args.data_name
-	sample_name_field=args.sample_name_field
-	splicing_event_type=args.splicing_event_type
+	sample_name_field=args.sample_name_field            # 1代表是文件的绝对路径，2代表的是文件的目录的绝对路径
+	splicing_event_type=args.splicing_event_type        # 不包含互斥外显子
 	individual_filter= args.sample_based_filter
 	novelSS= args.novelSS
 	exon_start_dict={}
@@ -236,7 +238,7 @@ def main(args):
 		print '[INFO] Sample name parsed from bam file.  (alternatively can be parsed from up level folder)'
 	if sample_name_field==2:
 		print '[INFO] Sample name parsed from folder name above the bam file.  (alternatively can be parsed from bam file)'
-	db_dir=args.iris_db_path.rstrip('/')
+	db_dir=args.iris_db_path.rstrip('/')             # 储存经过格式化以及索引的ASmatrix
 	#prepare files/folders in IRIS db directory
 	os.system('mkdir -p '+db_dir+'/'+data_name+' '+db_dir+'/'+data_name+'/splicing_matrix')
 	fout_path=db_dir+'/'+data_name
@@ -250,7 +252,9 @@ def main(args):
 
 
 	#PARSING INPUT FILE LISTS
+	# rmats_mat_path_manifest参数可以输入多个rMATS输出文件的目录，fin_list列表包含了所有的JC.raw.input文件的绝对路径
 	fin_list=[l.strip().rstrip('/')+'/JC.raw.input.'+splicing_event_type+'.txt' for l in open(args.rmats_mat_path_manifest)]
+	# 列表包含了fromGTF文件的绝对路径
 	events_fin_list=[l.strip().rstrip('/')+'/fromGTF.'+splicing_event_type+'.txt' for l in open(args.rmats_mat_path_manifest)]
 	sample_fin_list, sample_header, sample_size= loadSamplelist(args.rmats_sample_order,sample_fin_list, sample_header,sample_name_field, sample_size)
 
