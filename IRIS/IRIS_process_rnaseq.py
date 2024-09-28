@@ -24,7 +24,7 @@ def STAR_alignment(readsFilesRNA, starGenomeDir, dbLength, outDir):
 	
 def cufflinks(gtf, sampleID):
   if os.path.exists(sampleID+'/Aligned.sortedByCoord.out.bam'):
-      cmd2='cufflinks --multi-read-correct -p 16 --GTF '+gtf+' -o '+sampleID+'/cufflinks '+sampleID+'/Aligned.sortedByCoord.out.bam'
+      cmd2='cufflinks --multi-read-correct -p 16 --GTF '+gtf+' -o '+sampleID+'/cufflinks '+           sampleID+'/Aligned.sortedByCoord.out.bam'
   else:
       cmd_sort='samtools sort '+sampleID+'/Aligned.out.bam -o '+sampleID+'/Aligned.sortedByCoord.out.bam'
       os.system(cmd_sort)
