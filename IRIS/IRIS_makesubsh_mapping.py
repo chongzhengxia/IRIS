@@ -1,5 +1,6 @@
 import sys,glob,os
 from . import config
+# out_prefix  out_dir/输入fq文件目录的文件名
         # out_dir/sample1   sample1全路径    这个函数在for 里被调用多次
 def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_dir):
 	fq_dir=fin   #sample1的全路径
@@ -34,7 +35,7 @@ def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_di
 def main(args):
 	starGenomeDir=args.starGenomeDir
 	gtf=args.gtf
-	fastq_folder_dir=args.fastq_folder_dir.rstrip('/') #一级目录
+	fastq_folder_dir=args.fastq_folder_dir.rstrip('/') #输入的一级目录
 	fastq_folder_list=glob.glob(fastq_folder_dir+'/*') #找出一级目录下的全部二级目录，每个二级目录里包含每个样本的R1，R2文件
 	out_dir=args.outdir.rstrip('/')                    #bam文件的文件夹的输出目录
 	task_name=args.data_name
@@ -44,7 +45,9 @@ def main(args):
 	if not os.path.exists(task_dir):
 		os.makedirs(task_dir)
                        # 列表包含全部的二级目录
-	for folder in fastq_folder_list:
+	for folder in fastq_folder_list:  # fastq_folder_list 一级目录下的二级目录的绝对路径  --input_data_all
+		                                                                                 --sample1
+										                 --sample2
 		print folder                  # out_dir/sample1          sample1的全路径                                存放作业脚本的目录
 		fn1,fn2=write_task_script(out_dir+'/'+folder.split('/')[-1], folder, label_string, starGenomeDir, gtf, task_dir)
 		if fn1=='':
