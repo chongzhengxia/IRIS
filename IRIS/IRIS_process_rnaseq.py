@@ -57,7 +57,7 @@ def main(args):
 	if args.mapping or args.quant or args.sort: # 如果 mapping quant sort 有一个参数被设置,那么all_the_way被设置为false
 		all_the_way=False
 
-	os.system('mkdir -p '+sampleID)
+	os.system('mkdir -p '+sampleID)          # 在out_dir下创建了sample1.aln文件夹用于存放star产生的文件
 	logging.basicConfig(level=logging.DEBUG,
 						format='%(asctime)s %(message)s',
 						filename=sampleID+'/IRIS_process_rnaseq.log'+ str(datetime.datetime.now())+'.txt' ,
