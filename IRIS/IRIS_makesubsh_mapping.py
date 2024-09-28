@@ -16,7 +16,7 @@ def write_task_script(out_prefix, fin, label_string, starGenomeDir, gtf, task_di
 		print 'file name can not be recognize'
 		return '','' 
 
-	out_dir=out_prefix.rstrip('/')+'.aln'                            # out_dir/sample1.aln
+	out_dir=out_prefix.rstrip('/')+'.aln'                            # out_dir/sample1.aln  这个文件夹在process_rna中star_alin函数中被创建
 	sample_name=out_dir.split('/')[-1].split('.')[0]                 # sample1
 	task_script_base1 = 'STARmap.{}.sh'.format(sample_name)          # STARmap.sample1.sh
 	task_script1 = os.path.join(task_dir, task_script_base1)         # task_dir/STARmap.sample1.sh  路径名字
