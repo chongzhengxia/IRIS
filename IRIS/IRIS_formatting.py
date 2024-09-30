@@ -85,6 +85,7 @@ def mergeEvents(events_fin_list, splicing_event_type, novelSS, exon_start_dict, 
 				if novel==False: # if no novel, will not parse the row and save
 					continue
 			events_cord=parseRow(event_ls)
+			# 'ENSG00000156261\tCCT8\tchr21\t-\t29066715\t29067071\t29066715\t29066777\t29066890\t29067071'
 			if events_cord in total_event_dict:
 				continue
 			total_event_dict[events_cord]=''
