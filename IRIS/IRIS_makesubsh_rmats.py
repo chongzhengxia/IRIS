@@ -7,7 +7,7 @@ def writeShell(rMATS_path,              fin_name,    folder_name,     bam_dir, r
 	fout_local.write(fin_name)                        # 在bam文件的同一级目录写入bam文件的绝对路径到一个文件里
 	fout_local.close()
 
-	sample_name=folder_name.split('/')[-1].split('.')[0]
+	sample_name=folder_name.split('/')[-1].split('.')[0]    [sample1,sample2,sample3]
 	task_script_base = 'rMATS_prep.{}.sh'.format(sample_name)
 	task_script = os.path.join(task_dir, task_script_base)
 	fout=open(task_script,'w')
@@ -20,13 +20,14 @@ def writeShell(rMATS_path,              fin_name,    folder_name,     bam_dir, r
 	# rMATS produces the desired output file despite the error return.
 	# A future version of rMATS may fix this behavior.
 	fout.write('python {} --b1 {}/bam_list.txt --od {} --tmp {}/{}.RL{}/{}.tmp --anchorLength 1 --readLength {} --gtf {} -t paired --task prep --nthread 8 --statoff {}|| true\n'.format(rMATS_path, folder_name, folder_name, bam_dir, task_name, read_length_argument, sample_name, read_length_argument, gtf, novelSS_str))
+	                                                                             
 	fout.close()
         # 每一个bam文件运行prep关闭statoff统计信息
                              #      找到的所有的star日志
 def organizeReadLength(rMATS_path, file_list_mapping, gtf, novelSS, bam_prefix, task_name, task_dir):
-	rl_dict={}           {folder_name:RL}
+	rl_dict={}           {folder_name:RL}  bam文件的目录
 	folder_names={}      {RL:''}
-	for fin_name in file_list_mapping:
+	for fin_name in file_list_mapping:  # 迭代star输出日志，查看read_length
 		for l in open(fin_name):
 			if l.find('Average input read length |')!=-1:
 				map_rl=int(round(float(l.split('Average input read length |')[-1].strip())/2,0))  # 通过日志找到的RL
@@ -35,7 +36,7 @@ def organizeReadLength(rMATS_path, file_list_mapping, gtf, novelSS, bam_prefix, 
 				break
 	bam_dir='/'.join(file_list_mapping[0].split('/')[:-2]) # bam_dir
 	for folder_name in folder_names:
-		os.system('mkdir -p '+bam_dir+'/'+task_name+'.RL'+str(folder_name))
+		os.system('mkdir -p '+bam_dir+'/'+task_name+'.RL'+str(folder_name)) # 有多少个不同的RL,就有多少个目录
 	for folder_name in rl_dict:
 		writeShell(rMATS_path, folder_name+'/'+bam_prefix+'.bam', folder_name, bam_dir, str(rl_dict[folder_name]), gtf, novelSS, task_name, task_dir)
 
