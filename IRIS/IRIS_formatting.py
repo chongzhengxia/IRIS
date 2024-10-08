@@ -113,7 +113,7 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 		parseRow=parseEventRowSE
 		
 	for b in range(0,len(total_event_list),batch):
-		Intercep_Matrix={}
+		Intercep_Matrix={}      #{'事件'： {(psi, cov)}}
 		print '[INFO] Merging in progress. Working on batch ',b 
 		batch_event_list= total_event_list[b:min(b+batch,len(total_event_list))]
 		batch_event_dict= dict.fromkeys(batch_event_list, 0)
