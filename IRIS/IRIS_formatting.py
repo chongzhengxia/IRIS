@@ -184,13 +184,13 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 					cov_all+=Intercep_Matrix[k][sample][1]
 				else:
 					psi_value_all+=['NaN']*sample_size[sample]
-			if individual_filter==False: #if filter by group and cov < cov_cutoff, skip this event K. Otherwise, psi_vallue_all is being wrote to output.
-				mean=numpy.mean(cov_all)
-				if mean < cov_cutoff: 
-					continue
-			if set(psi_value_all)==set(['NaN']): #remove full NaN events 2020
-				continue
-			fout.write(k+'\t'+'\t'.join(psi_value_all)+'\n')
+			#if individual_filter==False: #if filter by group and cov < cov_cutoff, skip this event K. Otherwise, psi_vallue_all is being wrote to output.
+			#	mean=numpy.mean(cov_all)
+			#	if mean < cov_cutoff: 
+			#		continue
+			#if set(psi_value_all)==set(['NaN']): #remove full NaN events 2020
+			#	continue
+			#fout.write(k+'\t'+'\t'.join(psi_value_all)+'\n')
 
 		fout.close()
 	return file_batch_list
