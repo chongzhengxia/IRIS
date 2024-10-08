@@ -117,10 +117,10 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 		print '[INFO] Merging in progress. Working on batch ',b 
 		batch_event_list= total_event_list[b:min(b+batch,len(total_event_list))]
 		batch_event_dict= dict.fromkeys(batch_event_list, 0)
-		for n,fin in enumerate(fin_list):  # 通过n将JC.raw.input.A3SS.txt与fromGTF.A3SS.txt一一对应起来
+		# 将batch_event_dict 当作完全从 total_env_list 里初始化得来的字典，简化逻辑
+		
+		for n,fin in enumerate(fin_list):  # 通过n将每个样本的JC.raw.input.A3SS.txt与fromGTF.A3SS.txt一一对应起来
 
-
-			
 			eventID={}
 			for index,event_l in enumerate(open(events_fin_list[n])):
 				if index==0:
@@ -129,14 +129,14 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 				event_cord=parseRow(event_ls)
 	                       #事件字符串                # {事件：0}
 				if event_cord in batch_event_dict:  
-					eventID[event_ls[0]]=event_cord # 如果从文件中获得的事件在切片排序后的字典中，则在eventID字典中重构这个
+					eventID[event_ls[0]]=event_cord # {0：事件， 1：事件， 2：事件}如果从文件中获得的事件在切片排序后的字典中，则在eventID字典中重构这个
 					                                # 事件，以该事件在该文件的ID号为key,以事件的信息为value
 			print '[INFO] Merging file: ', fin, len(eventID)
 			for index,r in enumerate(open(fin)):
 				if index==0:
 					continue
 				rs=r.strip().split('\t')
-				if rs[0] not in eventID:
+				if rs[0] not in eventID:               # 如果JC.txt与fromGTF.txt的ID能够对应上，则计算psi和cov
 					continue
 				Incl=map(float,rs[1].split(','))
 				Skip=map(float,rs[2].split(','))
