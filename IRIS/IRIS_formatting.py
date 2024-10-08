@@ -212,8 +212,9 @@ def mergeMatrixInOne(file_batch_list, cov_cutoff, data_name, splicing_event_type
 	fout_merge.close()
 	os.system('rm '+fout_path+'/splicing_matrix/splicing_matrix.'+splicing_event_type+novelss_tag+'.cov'+str(cov_cutoff)+'.'+data_name+'.txt.batch_*.txt')	
 	return 'splicing_matrix.'+splicing_event_type+novelss_tag+'.cov'+str(cov_cutoff)+'.'+data_name+'.txt'
-
-def index_PsiMatrix(fn, outdir, delim, splicing_event_type):
+	
+# index_PsiMatrix(fout_path+'/splicing_matrix/'+merged_file_name,   fout_path+'/splicing_matrix',            '\t',               splicing_event_type)
+def index_PsiMatrix(fn,                                              outdir,                                 delim,              splicing_event_type):
 	out_fp = outdir+'/'+fn.split('/')[-1]+'.idx'
 	line_formatter =  "{id}\t{offset}\n"
 	offset = 0	
@@ -222,7 +223,7 @@ def index_PsiMatrix(fn, outdir, delim, splicing_event_type):
 		col_index=8
 	with open(fn, 'r') as fin:
 		with open(out_fp, 'w') as fout:
-			offset += len(fin.readline()) 
+			offset += len(fin.readline())    # 自动跳过了头行
 			for line in fin:
 				ele = line.strip().split(delim)
 				eid = ':'.join([ele[0].split('_')[0].split('.')[0]]+ele[1:col_index])
