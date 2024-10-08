@@ -8,9 +8,9 @@ def loadSamplelist(fin_samples,           sample_fin_list,  sample_header,    sa
 		for r in open(ls):
 			#     既可以从bam文件解析文件名，也可以从bam文件的目录解析文件名 sample_name_field==2
 			rs=map(lambda x:x.split('/')[-sample_name_field].split('.bam')[0].split('.aln')[0],r.strip().strip(',').split(','))
-			#rs=map(lambda x:x.split('/')[-2],r.strip().strip(',').split(','))
+			# rs sample1
 			if sample_name_field==2:
-				sn_list=r.strip().strip(',').split(',')
+				sn_list=r.strip().strip(',').split(',') # sn_list [/path/sample1.aln/Aligned.sortedByCoord.out.bam]
 				for e,sn in enumerate(rs):
 					if len(sn)==0:
 						rs[e]=sn_list[e].split('/')[-1].split('.')[0]
