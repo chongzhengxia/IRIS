@@ -106,7 +106,7 @@ def writeMergedEvents(events_fin_list, splicing_event_type, cov_cutoff, data_nam
 	fout.close()
 
 	return total_event_list
-
+    # mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, data_name, splicing_event_type, sample_header, sample_size, total_event_list, file_batch_list, batch, fout_path, individual_filter, novelSS)
 def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, data_name, splicing_event_type, sample_header, sample_size, total_event_list, file_batch_list, batch, fout_path, individual_filter, novelSS):
 	parseRow=parseEventRow
 	if splicing_event_type=='SE':
