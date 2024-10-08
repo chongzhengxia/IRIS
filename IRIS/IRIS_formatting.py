@@ -6,7 +6,7 @@ def loadSamplelist(fin_samples,           sample_fin_list,  sample_header,    sa
 		ls=l.strip()
 		sample_fin_list.append(ls)
 		for r in open(ls):
-			#     /PUBLIC/home/xiachongzheng/IRIS/STAR_out/Aligned.sortedByCoord.out.bam 从这里面取出
+			#     既可以从bam文件解析文件名，也可以从bam文件的目录解析文件名
 			rs=map(lambda x:x.split('/')[-sample_name_field].split('.bam')[0].split('.aln')[0],r.strip().strip(',').split(','))
 			#rs=map(lambda x:x.split('/')[-2],r.strip().strip(',').split(','))
 			if sample_name_field==2:
@@ -68,6 +68,7 @@ def checkNovelSS(head, ls, splicing_event_type, exon_start_dict, exon_end_dict):
 
 
 def mergeEvents(events_fin_list, splicing_event_type, novelSS, exon_start_dict, exon_end_dict): 
+	# 遍历每个文件，然后将事件全部存储到字典当中
 	parseRow=parseEventRow
 	if splicing_event_type=='SE':
 		parseRow=parseEventRowSE
@@ -255,7 +256,7 @@ def main(args):
 	#PARSING INPUT FILE LISTS
 	# rmats_mat_path_manifest参数可以输入多个rMATS输出文件的目录，fin_list列表包含了所有的JC.raw.input文件的绝对路径
 	fin_list=[l.strip().rstrip('/')+'/JC.raw.input.'+splicing_event_type+'.txt' for l in open(args.rmats_mat_path_manifest)]
-	# 列表包含了fromGTF文件的绝对路径
+	# 列表包含了fromGTF文件的绝对路径 可以包含多个样本的相同事件
 	events_fin_list=[l.strip().rstrip('/')+'/fromGTF.'+splicing_event_type+'.txt' for l in open(args.rmats_mat_path_manifest)]
 	sample_fin_list, sample_header, sample_size= loadSamplelist(args.rmats_sample_order,sample_fin_list, sample_header,sample_name_field, sample_size)
 
