@@ -2,11 +2,11 @@ import sys, numpy, argparse, os
 #                                          []                  []                 1文件或者2目录    {}
 # loadSamplelist(args.rmats_sample_order, sample_fin_list,  sample_header,    sample_name_field, sample_size)
 def loadSamplelist(fin_samples,           sample_fin_list,  sample_header,    sample_name_field, sample_size):
-	for l in open(fin_samples):   # rMATS第一个步骤的输入文件
+	for l in open(fin_samples):   # 
 		ls=l.strip()
 		sample_fin_list.append(ls)
 		for r in open(ls):
-			#     既可以从bam文件解析文件名，也可以从bam文件的目录解析文件名
+			#     既可以从bam文件解析文件名，也可以从bam文件的目录解析文件名 sample_name_field==2
 			rs=map(lambda x:x.split('/')[-sample_name_field].split('.bam')[0].split('.aln')[0],r.strip().strip(',').split(','))
 			#rs=map(lambda x:x.split('/')[-2],r.strip().strip(',').split(','))
 			if sample_name_field==2:
