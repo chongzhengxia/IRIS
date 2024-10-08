@@ -113,7 +113,7 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 		parseRow=parseEventRowSE
 		
 	for b in range(0,len(total_event_list),batch):
-		Intercep_Matrix={}      #{'事件'： {(psi, cov)}}
+		Intercep_Matrix={}      #{'事件'： {来源:(psi, cov)}}
 		print '[INFO] Merging in progress. Working on batch ',b 
 		batch_event_list= total_event_list[b:min(b+batch,len(total_event_list))]
 		batch_event_dict= dict.fromkeys(batch_event_list, 0)
@@ -157,7 +157,7 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 				if eventID[rs[0]] not in Intercep_Matrix:
 					Intercep_Matrix[eventID[rs[0]]]={}
 				if sample_fin_list[n] not in Intercep_Matrix[eventID[rs[0]]]:
-					Intercep_Matrix[eventID[rs[0]]][sample_fin_list[n]]=(psi_values,Cov)
+					Intercep_Matrix[eventID[rs[0]]][sample_fin_list[n]]=(psi_values,Cov)   {'事件'： {来源:(psi, cov), 来源:(psi, cov)}}
 				if len(psi_values)!=sample_size[sample_fin_list[n]]:
 					exit('[Abort] Sample number does not match observations in JC file.')
 
