@@ -68,12 +68,14 @@ def checkNovelSS(head, ls, splicing_event_type, exon_start_dict, exon_end_dict):
 
 
 def mergeEvents(events_fin_list, splicing_event_type, novelSS, exon_start_dict, exon_end_dict): 
-	# 遍历每个文件，然后将事件全部存储到字典当中
+	# 遍历每个文件，然后将unique事件全部存储到字典当中并返回
 	parseRow=parseEventRow
 	if splicing_event_type=='SE':
 		parseRow=parseEventRowSE
 	total_event_dict={}
 	for i, events_fin in enumerate(events_fin_list):
+		# 遍历文件的每一行，将ENSG编号，基因名称，染色体号，正负链，前中后剪接信息返回为制表符分隔的文本信息，如果这些信息在所有的
+		# 事件字典中存在，则继续遍历
 		head=[]
 		for index,event_l in enumerate(open(events_fin)):
 			if index==0:
