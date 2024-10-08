@@ -193,7 +193,7 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 			fout.write(k+'\t'+'\t'.join(psi_value_all)+'\n')
 
 		fout.close()
-	return file_batch_list
+	return file_batch_list   # 列表里只有一个文件地址，简化
 
 def mergeMatrixInOne(file_batch_list, cov_cutoff, data_name, splicing_event_type, fout_path, novelSS):
 	novelss_tag=''
