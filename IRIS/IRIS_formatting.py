@@ -190,7 +190,7 @@ def mergeMatrixInBatch(fin_list, events_fin_list, sample_fin_list, cov_cutoff, d
 			#		continue
 			if set(psi_value_all)==set(['NaN']): #remove full NaN events 2020
 				continue
-			fout.write(k+'\t'+'\t'.join(psi_value_all)+'\n')
+			fout.write(k+'\t'+'\t'.join(psi_value_all)+'\n')    # example 的txt文件
 
 		fout.close()
 	return file_batch_list   # 列表里只有一个文件地址，简化
