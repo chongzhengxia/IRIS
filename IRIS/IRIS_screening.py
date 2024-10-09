@@ -416,8 +416,9 @@ def main(args):
 		if not os.path.isfile(fin_list[group]+'.idx'):
 			exit('[Error] Need to index '+fin_list[group])
 # db_dir/group_name/splicing_matrix/splicing_matrix.A3SS.cov10.group_name.txt    db_dir/group_name/splicing_matrix/
-		index[group]=read_PsiMatrix_index(fin_list[group],'/'.join(fin_list[group].split('/')[:-1]))
-		# {Glioma_test:{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}}
+		index[group]=read_PsiMatrix_index(fin_list[group],'/'.join(fin_list[group].split('/')[:-1])) # 将自己以及剩余的panel的事件读取到字典当中
+		# {Glioma_test:{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249},
+		   other_test:{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}}
 
 
 	## Load and perform test by row/event
@@ -426,19 +427,19 @@ def main(args):
 		tot=len(index[out_prefix])-1
 		print '[INFO] IRIS screen - started. Total input events:', tot+1
 		
-		for event_idx,k in enumerate(index[out_prefix]):
+		for event_idx,k in enumerate(index[out_prefix]):  # k是字典的key不是value   k是Glioma的每一个事件
 			config.update_progress(event_idx/(0.0+tot))
 			
 			#Initiate  
-			for group in panel_list:
+			for group in panel_list:        # 遍历输入的与剩余的panel {剩余的panel: True}
 				if group!=out_prefix:
 					has[group]=True
 			psi={}
 			has_count=0
-			for group in panel_list:
-				if k in index[group]:
+			for group in panel_list:  # panel_list是Glioma与剩下的panel的名称 [Glioma, ...]
+				if k in index[group]:    # 看该事件在多少个panel中存在
 					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:])
-					has_count+=1
+					has_count+=1    # 看该事件在多少个panel中存在，has_count 最小为1因为必定包含其自身
 				else:
 					has[group]=False
 			#Filtering
