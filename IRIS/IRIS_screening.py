@@ -343,7 +343,7 @@ def main(args):
 	remove_early_stop=args.remove_early_stop           # 默认保留截短的多肽
 	use_existing_test_result=args.use_existing_test_result  # 默认执行完整的测试
 	
-	filter1_cutoffs, filter1_panel_list, panel_list = loadParametersRow(filter1_para, panel_list)
+	filter1_cutoffs, filter1_panel_list, panel_list = loadParametersRow(filter1_para, panel_list)    # [阈值参数] [要比较的panel] [比较的， 要比较的panel]
 	filter2_cutoffs, filter2_panel_list, panel_list = loadParametersRow(filter2_para, panel_list)
 	filter3_cutoffs, filter3_panel_list, panel_list = loadParametersRow(filter3_para, panel_list)
 	
@@ -364,19 +364,19 @@ def main(args):
 	
 	non_parametric=False
 	if len(test_mode)>1:
-		non_parametric=True if test_mode[1]=='nonparametric' else False
+		non_parametric=True if test_mode[1]=='nonparametric' else False   # 根据示例默认使用参数检验 non_parametric = False
 
-	group_test=False if test_mode[0]!='group' else True
-	individual_test=False if test_mode[0]!='personalized' else True
-	summary_file=False if test_mode[0]!='summary' else True
+	group_test=False if test_mode[0]!='group' else True                       # 根据示例默认使用group_test group_test = True
+	individual_test=False if test_mode[0]!='personalized' else True           #                            individual_test = False
+	summary_file=False if test_mode[0]!='summary' else True                   #                            summary_file = False
 	if [group_test,individual_test,summary_file]==[False,False,False]:
 		exit('[Error] Need to choose one mode.exit!')
 	association_panel_len=len(filter1_panel_list)
 	recurrence_panel_len=len(filter2_panel_list)
 	specificity_panel_len=len(filter3_panel_list)
-	panel_count=sum(1 for i in [association_panel_len, recurrence_panel_len, specificity_panel_len] if i!=0)
-	screening_type_list=['association']*association_panel_len+['recurrence']*recurrence_panel_len+['association_high']*specificity_panel_len
-	set_matched_tumor= True if screening_type_list[0] == 'association' else False
+	panel_count=sum(1 for i in [association_panel_len, recurrence_panel_len, specificity_panel_len] if i!=0)  # 计算3个panel不为0的个数
+	screening_type_list=['association']*association_panel_len+['recurrence']*recurrence_panel_len+['association_high']*specificity_panel_len  # 分别给各个panel打上标签
+	set_matched_tumor= True if screening_type_list[0] == 'association' else False   # set_matched_tumor = True
         
         if args.translating:
             gtf=args.gtf
