@@ -38,12 +38,13 @@ def index_PsiMatrix(fn,outdir,delim):
 				fout.write( line_formatter.format(id=eid, offset=offset) )
 				offset += len(line)
 	return
-
-def read_PsiMatrix_index(fn,outdir):
+# db_dir/group_name/splicing_matrix/splicing_matrix.A3SS.cov10.group_name.txt  db_dir/group_name/splicing_matrix/
+def read_PsiMatrix_index(fn,                                                          outdir):
 	index = {}
+	#              db_dir/group_name/splicing_matrix/splicing_matrix.A3SS.cov10.group_name.txt.idx
 	for line in open(outdir+'/'+fn.split('/')[-1]+'.idx', 'r'):
 		ele = line.strip().split()
-		index[ele[0]] = int(ele[1])
+		index[ele[0]] = int(ele[1]) #{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}offset反应了事件以及有多少样本
 	return index
 
 def fetch_PsiMatrix(eid, fn, outdir, delim, index=None):
@@ -409,12 +410,14 @@ def main(args):
 	fout_prioritized=openScreeningFout(outdir,out_prefix, splicing_event_type, 'tier2tier3')
 
 	##Load IRIS reference panels
-	for group_name in panel_list:
-		fin_list[group_name]=db_dir+'/'+group_name+'/splicing_matrix/splicing_matrix.'+splicing_event_type+'.cov10.'+group_name+'.txt'
+	for group_name in panel_list: # splicing_matrix.A3SS.cov10.data_name.txt
+		fin_list[group_name]=db_dir+'/'+group_name+'/splicing_matrix/splicing_matrix.'+splicing_event_type+'.cov10.'+group_name+'.txt' # {panel_name: .txt_path, panel_name: .txt_path}
 	for group in fin_list.keys():
 		if not os.path.isfile(fin_list[group]+'.idx'):
 			exit('[Error] Need to index '+fin_list[group])
+# db_dir/group_name/splicing_matrix/splicing_matrix.A3SS.cov10.group_name.txt    db_dir/group_name/splicing_matrix/
 		index[group]=read_PsiMatrix_index(fin_list[group],'/'.join(fin_list[group].split('/')[:-1]))
+		# {Glioma_test:{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}}
 
 
 	## Load and perform test by row/event
