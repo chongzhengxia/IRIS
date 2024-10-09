@@ -338,10 +338,10 @@ def main(args):
 	        blocklist_events=loadBlacklistEvents(blocklist_path)
 	bw_map,calc_length=loadMappability(mappability_path)
 
-	all_orf=args.all_reading_frames
+	all_orf=args.all_reading_frames                    # 默认只使用默认的uniport orf
 	ignore_annotation=args.ignore_annotation
-	remove_early_stop=args.remove_early_stop
-	use_existing_test_result=args.use_existing_test_result
+	remove_early_stop=args.remove_early_stop           # 默认保留截短的多肽
+	use_existing_test_result=args.use_existing_test_result  # 默认执行完整的测试
 	
 	filter1_cutoffs, filter1_panel_list, panel_list = loadParametersRow(filter1_para, panel_list)
 	filter2_cutoffs, filter2_panel_list, panel_list = loadParametersRow(filter2_para, panel_list)
