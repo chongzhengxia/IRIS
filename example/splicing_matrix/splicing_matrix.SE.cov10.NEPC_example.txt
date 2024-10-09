@@ -1,4 +1,4 @@
-AC	GeneName	chr	strand	exonStart	exonEnd	upstreamEE	downstreamES	Sample1	Sample2	Sample3	Sample4	Sample5	Sample6	Sample7	Sample8	Sample9	Sample10
+AC	GeneName	chr	strand	exonStart	exonEnd	upstreamEE	downstreamES	Sample1	Sample2	Sample3	Sample4	Sample5	Sample6	Sample7	Sample8	Sample9	Sample10   # 转义字符作为一个字符，剩下的全部识别为一个字符 128 + 18 = 148
 ENSG00000090674	MCOLN1	chr19	+	7593986	7594088	7593856	7594475	1.0	NaN	NaN	NaN	NaN	NaN	1.0	NaN	NaN	1.0
 ENSG00000183773	AIFM3	chr22	+	21331320	21331384	21331227	21331988	1.0	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN
 ENSG00000008282	SYPL1	chr7	-	105736738	105736748	105733583	105738135	0.5792	0.1807	0.0099	0.0	0.381	0.0	0.5996	0.0401	0.7376	0.4413
