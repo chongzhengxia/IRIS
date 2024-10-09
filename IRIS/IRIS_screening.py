@@ -518,35 +518,7 @@ def main(args):
 
 		mappability_tag, mappability_list=['',''] #clear
 			
-		# elif individual_test:
-		# 	test={}
-		# 	query_mean=[psi[out_prefix][0],'-','-']
-		# 	for j,group in enumerate(panel_list[1:]):
-		# 		test[group]=['-']*3
-		# 		if has[group]:
-		# 			test[group]=one2N(psi[out_prefix],psi[group],screening_type_list[j])
 
-		# 	result=[k]+query_mean+['\t'.join(map(str,test[t])) for t in panel_list if t!=out_prefix]
-		# 	fout_direct.write('\t'.join(map(str,result))+'\n')
-
-		# 	pval=[test[t][0] for t in panel_list if t!=out_prefix]
-		# 	deltaPSI=[test[t][1] for t in panel_list if t!=out_prefix]# select deltapsi col of screening result
-		# 	foc=[test[t][2] for t in panel_list if t!=out_prefix]
-			
-		# 	differential,equal,positive,negative,testable,primary_result, primary_result_foc, deltapsi_list,foc_list=summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc, association_panel_len, recurrence_panel_len, pval, deltaPSI, foc, screening_type_list)
-			
-		# 	primary_deltapsi, primary_foc, tissue_specificity, tag = defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, association_panel_len, specificity_panel_len, differential,equal,positive,negative,testable,primary_result, primary_result_foc, deltapsi_list,foc_list,use_ratio)
-		# if tag!=[]:
-		# 	if tag[0]=='associated':
-		# 		mappability_tag, mappability_list=mappability_write(ls[0], bw_map, calc_length)
-		# 		fout_primary.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(ls[0],ls[1],ls[2],ls[3],primary_deltapsi, primary_foc, str(differential)+'/'+str(association_panel_len),str(equal)+'/'+str(recurrence_panel_len),str(tissue_specificity)+'/'+str(specificity_panel_len),';'.join(tag), ';'.join(mappability_list),mappability_tag))
-
-		# if panel_count==len(tag):
-		# 	if mappability_tag=='':#only if not in associated, then load mappability here
-		# 		mappability_tag, mappability_list=mappability_write(ls[0], bw_map, calc_length)
-		# 	fout_prioritized.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(ls[0],ls[1],ls[2],ls[3],primary_deltapsi, primary_foc, str(differential)+'/'+str(association_panel_len),str(equal)+'/'+str(recurrence_panel_len),str(tissue_specificity)+'/'+str(specificity_panel_len),';'.join(tag),';'.join(mappability_list),mappability_tag))
-
-		# mappability_tag, mappability_list=['',''] #clear
 	fout_primary.close()
 	fout_prioritized.close()
 
