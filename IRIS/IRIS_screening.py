@@ -56,7 +56,11 @@ def fetch_PsiMatrix(eid, fn, outdir, delim, index=None):
 		data = np.asarray(f.readline().strip().split(delim))
 	return (header, data)
 
-def openTestingFout(outdir, out_prefix, splicing_event_type, summary_file, panel_list, test_mode, fin_name=''):
+
+
+#                          'Glioma_test'                  False        ['Glioma_test',...]       'group'
+#   openTestingFout(outdir, out_prefix, splicing_event_type, summary_file, panel_list,          test_mode[0], 'guided')
+def openTestingFout(outdir, out_prefix, splicing_event_type, summary_file, panel_list,          test_mode, fin_name=''):
 	header=['as_event','meanPSI','Q1PSI','Q3PSI']
 	if test_mode=='group':
 		header_prefix=['_pVal','_deltaPSI','_tumorFC']
@@ -65,9 +69,11 @@ def openTestingFout(outdir, out_prefix, splicing_event_type, summary_file, panel
 	fout_name=outdir+'/'+out_prefix+'.'+splicing_event_type+'.test.all_'+fin_name+'.txt'
 	fout=open(fout_name,'w')
 	if summary_file==False:
-		header+=['\t'.join(map(lambda x:ref+x ,header_prefix)) for ref in panel_list if ref!=out_prefix]
+		                                            ['_pVal','_deltaPSI','_tumorFC']              ['Glioma_test','a']         'Glioma_test' 
+		header+=['\t'.join(map(lambda x:ref+x ,       header_prefix))                 for ref in panel_list if ref!=           out_prefix]
+		#  如果只有association_panel header为  ['as_event', 'meanPSI', 'Q1PSI', 'Q3PSI']
 	fout.write('\t'.join(header)+'\n')
-	return fout, fout_name
+	return fout, fout_name   # 返回文件的路径以及没有关闭的文件对象
 
 def openScreeningFout(outdir, out_prefix, splicing_event_type, fout_name):
 	fout=open(outdir+'/'+out_prefix+'.'+splicing_event_type+'.'+fout_name+'.txt','w')
