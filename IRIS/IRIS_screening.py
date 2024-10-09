@@ -313,7 +313,7 @@ def loadParametersRow(filter_para, panel_list):
 	if filter_para.strip()!='':
 		filter_cutoffs = map(float,filter_para.strip().split(' ')[0].split(','))
 		filter_panel_list = filter_para.strip().split(' ')[1].split(',')	
-		panel_list+=filter_panel_list
+		panel_list+=filter_panel_list                          # [tumor, nomal]
 	else:
 		filter_panel_list =[]
 	return filter_cutoffs, filter_panel_list, panel_list
