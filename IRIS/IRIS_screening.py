@@ -46,8 +46,8 @@ def read_PsiMatrix_index(fn,                                                    
 		ele = line.strip().split()
 		index[ele[0]] = int(ele[1]) #{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}offset反应了事件以及有多少样本
 	return index
-
-def fetch_PsiMatrix(eid, fn, outdir, delim, index=None):
+# fetch_PsiMatrix(k,           fin_list[group],        '.',           '\t',         index[group])
+def fetch_PsiMatrix(eid,                  fn,          outdir,          delim,       index=None):
 	if index is None:
 		index = read_PsiMatrix_index(fn,outdir)
 	with open(fn, 'r') as f:
@@ -438,7 +438,7 @@ def main(args):
 			has_count=0
 			for group in panel_list:  # panel_list是Glioma与剩下的panel的名称 [Glioma, ...]
 				if k in index[group]:    # 看该事件在多少个panel中存在
-					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:])
+					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:]) # 可能是panel然后是一个字典，字典里是事件与psi的对应值
 					has_count+=1    # 看该事件在多少个panel中存在，has_count 最小为1因为必定包含其自身
 				else:
 					has[group]=False
