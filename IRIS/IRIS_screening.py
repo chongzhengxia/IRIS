@@ -232,14 +232,14 @@ def summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff
 	association_passed,recurrence_passed,specificity_positive,specificity_negative, specificity_testable=[0,0,0,0,0]
 	primary_result, primary_result_foc=[[],[]] #take care of multiple tiisue matched norm
 	deltapsi_list_voted,foc_list_voted=[[],[]] #if no tissue-matched norm, use median
-	for i,group_type in enumerate(screening_type_list):
+	for i,group_type in enumerate(screening_type_list):   # screening_type_list有几个值，p delta_psi fc 就有几个值
 		if pval[i]=='-': #This is important - skip all missing, which is not useful for summarizing but not affecting consistancy.
 			continue
 		if screening_type_list[i]=='association': 
 			primary_result.append(float(deltaPSI[i])) 
 			primary_result_foc.append(float(foc[i]))
 			if float(pval[i])<=filter1_cutoff_pval and abs(float(deltaPSI[i]))>=filter1_cutoff_dpsi and float(foc[i])>=filter1_cutoff_foc:
-					association_passed+=1
+					association_passed+=1  这个不是过滤掉，而是通过了
 					continue
 		if screening_type_list[i]=='recurrence':
 			if float(pval[i])<=filter2_cutoff_pval and abs(float(deltaPSI[i]))>=filter2_cutoff_dpsi:
@@ -500,10 +500,10 @@ def main(args):
 					fout_direct.write('\t'.join(map(str,result))+'\n')
 
 			elif individual_test:###TODO
-				test={}
+				test={}       # {Glioma: [psi], other_panel: [psi,psi]}
 				query_mean=[psi[out_prefix][0],'-','-']   #  k对应了要进行测试的每个事件，但是只有一个样本，构造query_mean为 [psi, '-', '-']
 				for j,group in enumerate(panel_list[1:]): # panel_list 与 screening_type_list 的区别主要是panel_list包含了Gliome_test本身，而screening_type_list 只有三种filter的名称，并且不包含自身 panel_list : [Gliome_test, GTEx_Brain  ]
-					test[group]=['-']*3               # {other_panel: ['-', '-', '-']}						                                                          screening_type_list: ['association']  j跟group相互配合以取出含有Gliome事件的panel以及其对应的标签
+					test[group]=['-']*3               # {GTEx_Brain: ['-', '-', '-']}						                                                          screening_type_list: ['association']  j跟group相互配合以取出含有Gliome事件的panel以及其对应的标签
 					if has[group]:                    # 查找哪一个panel中含有k所对应的事件
 						test[group]=one2N(psi[out_prefix],psi[group],screening_type_list[j]) # {GTEx_Brain: [np.nan,delta_psi,tumor_foc], other_panel: [np.nan,delta_psi,tumor_foc]} 会将所有含有k事件的panel都进行测试并且添加进来
 
