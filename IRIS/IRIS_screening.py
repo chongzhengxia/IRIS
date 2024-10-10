@@ -437,14 +437,19 @@ def main(args):
 			for group in panel_list:        # 遍历输入的与剩余的panel {剩余的panel: True}
 				if group!=out_prefix:
 					has[group]=True
-			psi={}
+			psi={}  #    psi字典   Glioma中的一个事件产生一个{Glioma: [psi], other_panel: [psi,psi]}字典
 			has_count=0
 			for group in panel_list:  # panel_list是Glioma与剩下的panel的名称 [Glioma, ...]
 				if k in index[group]:    # 看该事件在多少个panel中存在
-					#                                                                       拿到返回的data,将data切片，拿到全部的psi值
-					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:]) # 可能是panel然后是一个字典，字典里是事件与psi的对应值
+					#                                                                       
+					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:]) # 拿到返回的data,将data切片，拿到全部的psi值
 					# 首先肯定会遍历tumor自身的数据，然后拿到自身事件的PSI，并且has_count + 1 然后遍历其它panel的事件，如果找到了与tumor对应的事件
-					# 重复上述步骤，最终psi这个字典里    Glioma中的一个事件产生一个{Glioma: [psi], other_panel: [psi,psi]}字典
+					# 重复上述步骤，最终psi这个字典里    
+					
+					
+					#    psi字典   Glioma中的一个事件产生一个{Glioma: [psi], other_panel: [psi,psi]}字典
+
+					
 					has_count+=1    # 看该事件在多少个panel中存在，has_count 最小为1因为必定包含其自身
 				else:
 					has[group]=False
