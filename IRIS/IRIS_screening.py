@@ -46,15 +46,16 @@ def read_PsiMatrix_index(fn,                                                    
 		ele = line.strip().split()
 		index[ele[0]] = int(ele[1]) #{'ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475':  146, 'ENSG00000183773:AIFM3:chr22:+:21331320:21331384:21331227:21331988':   249}offset反应了事件以及有多少样本
 	return index
-# fetch_PsiMatrix(k,           fin_list[group],        '.',           '\t',         index[group])
-def fetch_PsiMatrix(eid,                  fn,          outdir,          delim,       index=None):
+#          tumor组里的事件     .txt的path                                  group是tumor以及包含tumor事件的其它组，最终是一个事件与offset的字典
+# fetch_PsiMatrix(k,           fin_list[group],首先是Gliome然后是其它panel,在调用时是被循环调用的        '.',           '\t',         index[group])
+def fetch_PsiMatrix(eid,                  fn,                                                          outdir,          delim,       index=None):
 	if index is None:
 		index = read_PsiMatrix_index(fn,outdir)
 	with open(fn, 'r') as f:
 		ele = f.readline().strip().split(delim)
-		header = np.asarray([ x.split('.')[0] if x.startswith('SRR') else x for x in ele ])
-		f.seek(index[eid], 0)
-		data = np.asarray(f.readline().strip().split(delim))
+		header = np.asarray([ x.split('.')[0] if x.startswith('SRR') else x for x in ele ])   只是读取.txt的header SSR 在这里目前没有用
+		f.seek(index[eid], 0)  # 根据指针，直接读取txt文件中与k对应的事件行
+		data = np.asarray(f.readline().strip().split(delim))    # 事件  + psi值
 	return (header, data)
 
 
@@ -72,7 +73,7 @@ def openTestingFout(outdir, out_prefix, splicing_event_type, summary_file, panel
 	if summary_file==False:
 		                                            ['_pVal','_deltaPSI','_tumorFC']              ['Glioma_test','a']         'Glioma_test' 
 		header+=['\t'.join(map(lambda x:ref+x ,       header_prefix))                 for ref in panel_list if ref!=           out_prefix]
-		#  如果只有association_panel header为  ['as_event', 'meanPSI', 'Q1PSI', 'Q3PSI']
+		#  如果只有association_panel header为  ['as_event', 'meanPSI', 'Q1PSI', 'Q3PSI'] + ['otherpanel_modifiedPctl', 'otherpanel_deltaPSI', 'tumorFC']
 	fout.write('\t'.join(header)+'\n')
 	return fout, fout_name   # 返回文件的路径以及没有关闭的文件对象
 
@@ -128,27 +129,29 @@ def getDirection(filter1_panel_list, psi, test, non_parametric, screening_type):
 		if np.median(deltaPSI_primary)<=0:
 			direction='less' if non_parametric else 'smaller'
 		return psi_primary, direction
-		
-def calcTumorFormFoc(delta_psi, mean_psi):
+#                   float(p1-np.nanmean(g1))    float(p1)
+def calcTumorFormFoc(delta_psi,                  mean_psi):
 	if delta_psi>0:
-		return mean_psi/(mean_psi - delta_psi+10**-8)
+		return mean_psi/(mean_psi - delta_psi+10**-8)   # float(p1)/(float(p1) - float(p1 - np.nanmean(g1)) + 10 ** -8)
 	elif delta_psi<0:
 		return (1- mean_psi)/ (1- mean_psi+ delta_psi+10**-8)
 	else:
 		return 1
-
-def one2N(p1, g1, test_type):	
+#   k所对应的Gliome的一个事件的psi   assocoation跟k对应事件的psi    简化一下只有association
+# one2N(psi[out_prefix]                ,psi[group],             screening_type_list[j])
+def one2N(p1,                               g1,                      test_type):	
 	p1=np.array(p1)
 	g1=np.array(g1)
 	Q1=np.nanpercentile(g1,25)
 	Q3=np.nanpercentile(g1,75)
-	delta_psi=float(p1-np.nanmean(g1))
-	tumor_foc=calcTumorFormFoc(delta_psi, float(p1))
+	delta_psi=float(p1-np.nanmean(g1))                  # [0.5] - nanmean([0.1, 0.2, 0.3])
+	#                   float(p1-np.nanmean(g1))    float(p1)
+	tumor_foc=calcTumorFormFoc(delta_psi,          float(p1))
 	IQR=Q3-Q1
 	low_bound=max(Q1-1.5*IQR,0)
 	high_bound=min(Q3+1.5*IQR,1)
-	points_add=np.append(g1,p1)
-	empirical_percentile = stats.percentileofscore(points_add,p1)
+	points_add=np.append(g1,p1) #             [0.1, 0.2, 0.3, 0.5]       [0.5]
+	empirical_percentile = stats.percentileofscore(points_add,             p1)
 	if empirical_percentile>50:
 		empirical_percentile=100- empirical_percentile	
 	outlier_val=float(max(low_bound-p1,p1-high_bound))
@@ -224,7 +227,7 @@ def performTest(set_matched_tumor, has, j, group, screening_type_list, psi, out_
 			if has[group]:
 				test_result = groupTest(psi[out_prefix],psi[group], non_parametric, "two-sided", min_sample_count) #Two-sided testing 		
 		return test_result
-
+                        #      0.01,              0.05,                    1,                                                                                                                                    [na, na ]
 def summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc, pval, deltaPSI, foc, screening_type_list):
 	association_passed,recurrence_passed,specificity_positive,specificity_negative, specificity_testable=[0,0,0,0,0]
 	primary_result, primary_result_foc=[[],[]] #take care of multiple tiisue matched norm
@@ -378,11 +381,11 @@ def main(args):
 	summary_file=False if test_mode[0]!='summary' else True                   #                            summary_file = False
 	if [group_test,individual_test,summary_file]==[False,False,False]:
 		exit('[Error] Need to choose one mode.exit!')
-	association_panel_len=len(filter1_panel_list)
-	recurrence_panel_len=len(filter2_panel_list)
-	specificity_panel_len=len(filter3_panel_list)
-	panel_count=sum(1 for i in [association_panel_len, recurrence_panel_len, specificity_panel_len] if i!=0)  # 计算3个panel不为0的个数
-	screening_type_list=['association']*association_panel_len+['recurrence']*recurrence_panel_len+['association_high']*specificity_panel_len  # 分别给各个panel打上标签
+	association_panel_len=len(filter1_panel_list)				# 1
+	recurrence_panel_len=len(filter2_panel_list)				# 0
+	specificity_panel_len=len(filter3_panel_list)				# 0
+	panel_count=sum(1 for i in [association_panel_len, recurrence_panel_len, specificity_panel_len] if i!=0)  # 计算3个panel不为0的个数           1
+	screening_type_list=['association']*association_panel_len+['recurrence']*recurrence_panel_len+['association_high']*specificity_panel_len  # 分别给各个panel打上标签  ['association']
 	set_matched_tumor= True if screening_type_list[0] == 'association' else False   # set_matched_tumor = True
         
         if args.translating:
@@ -426,7 +429,7 @@ def main(args):
 		has={}
 		tot=len(index[out_prefix])-1
 		print '[INFO] IRIS screen - started. Total input events:', tot+1
-		
+		#  针对Glioma的每一个事件都进行下面的操作
 		for event_idx,k in enumerate(index[out_prefix]):  # k是字典的key不是value   k是Glioma的每一个事件
 			config.update_progress(event_idx/(0.0+tot))
 			
@@ -438,31 +441,42 @@ def main(args):
 			has_count=0
 			for group in panel_list:  # panel_list是Glioma与剩下的panel的名称 [Glioma, ...]
 				if k in index[group]:    # 看该事件在多少个panel中存在
+					#                                                                       拿到返回的data,将data切片，拿到全部的psi值
 					psi[group]=map(float,fetch_PsiMatrix(k,fin_list[group],'.','\t',index[group])[1][fetching_data_col:]) # 可能是panel然后是一个字典，字典里是事件与psi的对应值
+					# 首先肯定会遍历tumor自身的数据，然后拿到自身事件的PSI，并且has_count + 1 然后遍历其它panel的事件，如果找到了与tumor对应的事件
+					# 重复上述步骤，最终psi这个字典里    Glioma中的一个事件产生一个{Glioma: [psi], other_panel: [psi,psi]}字典
 					has_count+=1    # 看该事件在多少个panel中存在，has_count 最小为1因为必定包含其自身
 				else:
 					has[group]=False
+					# 这个for循环与上个for循环共同决定了has这个字典的值，上一个for循环将除去Gliome_test的panel添加到has字典里，如果Gliome_test的事件存在于某个panel里那么
+					# 这个panel的value会被设置为True,否则会被设置为false
 			# 统计tumor组中每个事件在其它panel的出现，如果在其它panel中出现，则累加，出现次数最少为1,因为与自己比较时，自身会累加一次
 			#Filtering
 			cat_psi=[]
 			for i in psi:
-				cat_psi+=psi[i]
-			if abs(max(cat_psi)-min(cat_psi))<0.05:#if change less than 5% skipped and no comparison available
+				cat_psi+=psi[i]   # cat_psi = cat_psi + psi[i]
+				[psi, psi, psi]
+				g      o     o
+			if abs(max(cat_psi)-min(cat_psi))<0.05:#if change less than 5% skipped and no comparison availabl
+				# 如果这个事件达不到这个阈值，则将这个事件写入文件，并且测试下一个事件
 				fout_filtered.write('[Low Range]{}\t{}\t{}\n'.format(k,str(abs(max(cat_psi)-min(cat_psi))),str(has_count))) 
 				continue
 			if k in blocklist_events:
 				fout_filtered.write('[Blacklisted]{}\t{}\t{}\n'.format(k,'-',str(has_count))) 
 				continue
+
+
+			# 如果只在Glioma中发现此事件这在notest.txt文件里标记为unique事件
 			if  has_count<=1:
 				fout_filtered.write('[Unique in Input]{}\t{}\t{}\n'.format(k,'-',str(has_count)))
 				continue
 			if min_sample_count:
-				sample_count=np.count_nonzero(~np.isnan(psi[out_prefix]))
+				sample_count=np.count_nonzero(~np.isnan(psi[out_prefix])) # 计算tumor 非NaN的psi个数
 				if sample_count<min_sample_count:
 					fout_filtered.write('[Low Sample Count in Input]{}\t{}\t{}\n'.format(k,str(sample_count),str(has_count)))
 					continue
 			#Testing and store/output results(both group and individual mode)	
-			if group_test:
+			if group_test:  # config默认是group_test
 				test={}
 				redirect=False
 				psi_primary=''
@@ -482,13 +496,14 @@ def main(args):
 
 			elif individual_test:###TODO
 				test={}
-				query_mean=[psi[out_prefix][0],'-','-']
-				for j,group in enumerate(panel_list[1:]):
-					test[group]=['-']*3
-					if has[group]:
-						test[group]=one2N(psi[out_prefix],psi[group],screening_type_list[j])
+				query_mean=[psi[out_prefix][0],'-','-']   #  k对应了要进行测试的每个事件，但是只有一个样本，构造query_mean为 [psi, '-', '-']
+				for j,group in enumerate(panel_list[1:]): # panel_list 与 screening_type_list 的区别主要是panel_list包含了Gliome_test本身，而screening_type_list 只有三种filter的名称，并且不包含自身 panel_list : [Gliome_test, GTEx_Brain  ]
+					test[group]=['-']*3               # {other_panel: ['-', '-', '-']}						                                                          screening_type_list: ['association']  j跟group相互配合以取出含有Gliome事件的panel以及其对应的标签
+					if has[group]:                    # 查找哪一个panel中含有k所对应的事件
+						test[group]=one2N(psi[out_prefix],psi[group],screening_type_list[j]) # {GTEx_Brain: [np.nan,delta_psi,tumor_foc], other_panel: [np.nan,delta_psi,tumor_foc]} 会将所有含有k事件的panel都进行测试并且添加进来
 
-				result=[k]+query_mean+['\t'.join(map(str,test[t])) for t in panel_list if t!=out_prefix]
+				result=[k]+query_mean+['\t'.join(map(str,test[t])) for t in panel_list if t!=out_prefix]  # ['ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475'] + [Glioma_psi, '-', '-'] + [np.nan\tdelta_psi\ttumor_foc, np.nan\tdelta_psi\ttumor_foc]
+				                                                                                        #   ['ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475', Glioma_psi, '-', '-', np.nan\tdelta_psi\ttumor_foc, np.nan\tdelta_psi\ttumor_foc]
 				fout_direct.write('\t'.join(map(str,result))+'\n')###TODO
 			
 			else:
@@ -498,9 +513,10 @@ def main(args):
 		fout_direct.close()
 
 	##Summarize results and priortize screening candidates
-	testing_intermediate_file = fout_direct_name if set_matched_tumor else fout_redirect_name
+	testing_intermediate_file = fout_direct_name if set_matched_tumor else fout_redirect_name 
+	#  fout_direct_name=outdir+'/'+out_prefix+'.'+splicing_event_type+'.test.all_guided.txt'
 
-	tot=config.file_len(testing_intermediate_file)-1
+	tot=config.file_len(testing_intermediate_file)-1   # 脱裤子放屁，就是guided.txt的行数
 	if tot==0:
 		exit('[Ended] no test performed because no testable events. Check input or filtering parameteres.') #Modified 2021
 	print '[INFO] IRIS screen - summarizing. Total events from last step:', tot
@@ -514,7 +530,7 @@ def main(args):
 		foc= ls[6::3]
 
 		association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable,primary_result, primary_result_foc, deltapsi_list_voted,foc_list_voted=summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc, pval, deltaPSI, foc, screening_type_list)
-
+                                                                                                                                                                                                      																						  false
 		primary_deltapsi, primary_foc, tissue_specificity, tag = defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, set_matched_tumor, specificity_panel_len, association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable,primary_result, primary_result_foc, deltapsi_list_voted,foc_list_voted,use_ratio)
 
 		if tag!=[]:
