@@ -442,6 +442,7 @@ def main(args):
 					has_count+=1    # 看该事件在多少个panel中存在，has_count 最小为1因为必定包含其自身
 				else:
 					has[group]=False
+			# 统计tumor组中每个事件在其它panel的出现，如果在其它panel中出现，则累加，出现次数最少为1,因为与自己比较时，自身会累加一次
 			#Filtering
 			cat_psi=[]
 			for i in psi:
