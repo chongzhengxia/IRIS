@@ -235,8 +235,12 @@ def performTest(set_matched_tumor,       has,                        j,         
 			if has[group]:
 				test_result = groupTest(psi[out_prefix],psi[group], non_parametric, "two-sided", min_sample_count) #Two-sided testing 		
 		return test_result
-                        #      0.01,              0.05,                    1,                                                                                                                                    [na, na ]
-def summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc, pval, deltaPSI, foc, screening_type_list):
+
+
+
+
+                        #      0.01,              0.05,                    1,                                                                                                                                      这三个值一有全有，一空全空
+def summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc,         pval, deltaPSI,                foc, screening_type_list):
 	association_passed,recurrence_passed,specificity_positive,specificity_negative, specificity_testable=[0,0,0,0,0]
 	primary_result, primary_result_foc=[[],[]] #take care of multiple tiisue matched norm
 	deltapsi_list_voted,foc_list_voted=[[],[]] #if no tissue-matched norm, use median
@@ -264,9 +268,14 @@ def summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff
 				if float(deltaPSI[i])<=-filter3_cutoff_dpsi:
 					specificity_negative+=1
 					continue
-	return association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable, np.median(primary_result), np.median(primary_result_foc), deltapsi_list_voted,foc_list_voted
+	return association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable, np.median(primary_result),                                   np.median(primary_result_foc),                      deltapsi_list_voted,              foc_list_voted
+	#         通过的个数          0                      0                     0                   0               association比较产生的全部的delta_psi的中位数          association比较产生的全部的fc的中位数                             []                              []
 
-def defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, set_matched_tumor, specificity_panel_len, association_passed, recurrence_passed, specificity_positive, specificity_negative, specificity_testable, primary_result, primary_result_foc, deltapsi_list_voted, foc_list_voted, use_ratio):
+
+
+
+#                              1                                                              True                0             association通过的个数              0                  0                     0                    0             delta_psi中位数   fc中位数                  []               []            false 
+def defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, set_matched_tumor, specificity_panel_len, association_passed,       recurrence_passed, specificity_positive, specificity_negative, specificity_testable, primary_result, primary_result_foc, deltapsi_list_voted, foc_list_voted, use_ratio):
 	tag=[]
  	if association_passed>=filter1_group_cutoff:#Improvement? current: 0>='' is false
  		tag.append('associated')
@@ -274,7 +283,7 @@ def defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cu
  		tag.append('recurrent') 
 	if set_matched_tumor:#TODO-FUTURE: take care of set-yes has-no redirected events
 		if primary_result>0:
-			tissue_specificity=specificity_positive
+			tissue_specificity=specificity_positive  # 0
 			ratio=False if use_ratio==False else specificity_positive/(specificity_testable+10**-8)>=filter3_group_cutoff/(specificity_panel_len+0.0)
 			if specificity_positive>=filter3_group_cutoff or ratio:
 				tag.append('high_assoc')
@@ -291,8 +300,8 @@ def defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cu
 	primary_deltapsi=primary_result if (primary_result!=0 and set_matched_tumor) else np.median(deltapsi_list_voted)#TODO
 	primary_foc=primary_result_foc if (primary_result!=0 and set_matched_tumor) else np.median(foc_list_voted)
 
-	return primary_deltapsi, primary_foc, tissue_specificity, tag
-
+	return primary_deltapsi,       primary_foc,       tissue_specificity,        tag
+#                 delta_psi中位数         fc中位数                0               [associated]
 def mappability_write(k, bw_map, calc_length):
 	mappability_list=getMappability(k, bw_map, calc_length)
 	mappability_tag='PASS'
@@ -544,8 +553,8 @@ def main(args):
 
 		association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable,primary_result, primary_result_foc, deltapsi_list_voted,foc_list_voted=summarizeTestResult(filter1_cutoff_pval, filter1_cutoff_dpsi, filter1_cutoff_foc,filter2_cutoff_pval, filter2_cutoff_dpsi, filter2_cutoff_foc, filter3_cutoff_pval, filter3_cutoff_dpsi, filter3_cutoff_foc, pval, deltaPSI, foc, screening_type_list)
                                                                                                                                                                                                       																						  false
-		primary_deltapsi, primary_foc, tissue_specificity, tag = defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, set_matched_tumor, specificity_panel_len, association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable,primary_result, primary_result_foc, deltapsi_list_voted,foc_list_voted,use_ratio)
-
+		primary_deltapsi,       primary_foc,       tissue_specificity,         tag       = defineTumorEvents(filter1_group_cutoff,filter2_group_cutoff,filter3_group_cutoff, set_matched_tumor, specificity_panel_len, association_passed,recurrence_passed,specificity_positive,specificity_negative,specificity_testable,primary_result, primary_result_foc, deltapsi_list_voted,foc_list_voted,use_ratio)
+#                 delta_psi中位数         fc中位数                0               [associated]
 		if tag!=[]:
 			if tag[0]=='associated':
 				mappability_tag, mappability_list=mappability_write(ls[0], bw_map, calc_length)
