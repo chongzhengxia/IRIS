@@ -114,8 +114,10 @@ def getMappability(splicing_event,bw_map,d):
 
 	mappability=[str(up_mean),str(target_mean),str(down_mean)]
 	return mappability
+# getDirection(filter1_panel_list, psi, test, non_parametric, screening_type_list[j]
 
-def getDirection(filter1_panel_list, psi, test, non_parametric, screening_type):
+#            association 的panel名称    psi字典   空字典   默认false使用参数检验       association后的panel type
+def getDirection(filter1_panel_list,     psi,       test, non_parametric,             screening_type):
 	psi_primary=[]
 	deltaPSI_primary=[]
 	for primary_group in filter1_panel_list:
@@ -161,13 +163,14 @@ def one2N(p1,                               g1,                      test_type):
 		return [50-empirical_percentile, delta_psi, tumor_foc]
 	else:
 		return [np.nan,delta_psi,tumor_foc]
-
-def statTest(g1,g2, direction, non_parametric):
+# statTest(g1, g2, direction, non_parametric)
+#         [psi]       [psi, psi]   'two-side'           False
+def statTest(g1,       g2,          direction,         non_parametric):
 	if direction != 'equivalence':
 		if non_parametric:
 			pvalue=stats.mannwhitneyu(g1,g2, alternative=direction)[1]
-		else:
-			pvalue=smw.ttest_ind(g1,g2, alternative=direction, usevar='unequal')[1]
+		else:    #                  [psi]      [psi, psi]     'two-side'  
+			pvalue=smw.ttest_ind(g1,        g2,      alternative=direction,        usevar='unequal')[1]   # 这个计算p值
 			#pvalue=smw.ttest_ind(g1,g2, alternative=direction)[1]
 	else:
 		threshold_tost = 0.05
@@ -185,12 +188,14 @@ def statTest_minSampleCount(g1,g2, direction, non_parametric):#Only enabled when
 		threshold_tost = 0.05
 		pvalue=smw.ttost_ind(g1,g2,-threshold_tost,threshold_tost)[0] #equivalence test
 	return pvalue
-
-def groupTest(g1,g2, non_parametric=False, direction='two-sided', min_sample_count=False):
+# groupTest(psi[out_prefix] ,psi[group], non_parametric,"two-sided", min_sample_count)
+#            [psi, psi]   [psi, psi, psi]
+def groupTest(g1,            g2,          non_parametric=False,     direction='two-sided',     min_sample_count=False):
 	g1=np.array(g1)
 	g2=np.array(g2)
-	g1=g1[~np.isnan(g1)]
-	g2=g2[~np.isnan(g2)]
+	g1=g1[~np.isnan(g1)]        [psi]
+	g2=g2[~np.isnan(g2)]        [psi,psi]
+	# g1为排除na值的input psi    g2为排除na值的assocoation pis
 	delta_psi=np.nanmean(g1)-np.nanmean(g2)
 	tumor_foc=calcTumorFormFoc(delta_psi,np.nanmean(g1))
 	if min_sample_count:
@@ -199,10 +204,13 @@ def groupTest(g1,g2, non_parametric=False, direction='two-sided', min_sample_cou
 		pvalue = statTest(g1, g2, direction, non_parametric)
 	return [pvalue, delta_psi, tumor_foc]
 
-def performTest(set_matched_tumor, has, j, group, screening_type_list, psi, out_prefix, non_parametric, test, filter1_panel_list, psi_primary, direction, min_sample_count): #PSI value-based screen allow two-sided or one-sided tests. Different from SJ count or CPM-based screen, where only one-sided test is needed.
-	screening_type = screening_type_list[j]
+
+# performTest(set_matched_tumor, has, j, group, screening_type_list, psi, out_prefix, non_parametric, test, filter1_panel_list, psi_primary, direction, min_sample_count)
+# 设置了association就是True         标记某个k事件是否在各个panel中   panel_list[1:]的索引   panel的名称      给panel_list[1:]打上标签    psi字典   [Gliome_test]    false表示使用参数检验  空字典        association panel 的名称       空字符串    空字符串        false
+def performTest(set_matched_tumor,       has,                        j,                      group,           screening_type_list,      psi,      out_prefix,     non_parametric,         test,       filter1_panel_list,          psi_primary,    direction,    min_sample_count): #PSI value-based screen allow two-sided or one-sided tests. Different from SJ count or CPM-based screen, where only one-sided test is needed.
+	screening_type = screening_type_list[j]                                     # association
 	redirect_output = False
-	test_result = ['-']*3 #For missing in non-eesential tests/comparisons
+	test_result = ['-']*3 #For missing in non-eesential tests/comparisons       # ['-', '-', '-']                      
 	if screening_type == 'association':
 		if has[group]:
 			test_result = groupTest(psi[out_prefix],psi[group], non_parametric,"two-sided", min_sample_count)
