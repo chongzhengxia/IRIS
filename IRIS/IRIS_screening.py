@@ -546,7 +546,7 @@ def main(args):
 		config.update_progress(event_idx/(0.0+tot))
 		if event_idx==0:
 			continue
-		ls=l.strip().split('\t')
+		ls=l.strip().split('\t')  # ['ENSG00000090674:MCOLN1:chr19:+:7593986:7594088:7593856:7594475',Glioma_psi,'num','num',p值,delta_psi值,tumor_foc值]  
 		pval= ls[4::3]# don't do map because '-'
 		deltaPSI = ls[5::3]
 		foc= ls[6::3]
