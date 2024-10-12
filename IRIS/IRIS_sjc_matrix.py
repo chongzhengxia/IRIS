@@ -36,8 +36,8 @@ def index_SJMatrix(fn, outdir, delim):
 def main(args):
 	
 	fname_pos=args.sample_name_field#2
-	fin_list_input=args.file_list_input
-	fin_list=loadFinlist(fin_list_input)  # [sample1 star_SJ文件, sample2 star_SJ文件, sample3 star_SJ文件]
+	fin_list_input=args.file_list_input  # SJ文件的路径写入的文件，每行代表一个文件
+	fin_list=loadFinlist(fin_list_input)  # [path to sample1 star_SJ文件, sample2 star_SJ文件, sample3 star_SJ文件]
 	data_name=args.data_name
 	db_dir=args.iris_db_path.rstrip('/')
 	os.system('mkdir -p '+db_dir+'/'+data_name+' '+db_dir+'/'+data_name+'/sjc_matrix')
