@@ -122,10 +122,11 @@ def update_SJdb(read, sjDB, annoSJ, genome, minOverhang, minOverhangC, minOverha
     return sjDB
 
 def get_transcript_ID(infoString):
-    infoStringArr = infoString.split(';')
+    infoStringArr = infoString.split(';')  #  [gene_id "ENSG00000290825.1", transcript_id "ENST00000456328.2", gene_type "lncRNA", gene_name "DDX11L2", transcript_type "lncRNA", 
+                                           #  transcript_name "DDX11L2-202", exon_number 1, exon_id "ENSE00002234944.1", level 2, transcript_support_level "1", tag "basic", tag "Ensembl_canonical", havana_transcript "OTTHUMT00000362751.1"]
     # Get position in the INFO string that has the transcript ID
     idx = [i for i, s in enumerate(infoStringArr) if 'transcript_id' in s][0]
-    return infoStringArr[idx].split('"')[1]
+    return infoStringArr[idx].split('"')[1]  #  ENST00000456328.2
 
 def build_anno_SJdb(gtfPath, chrList):
     annoSJ = {}
@@ -143,7 +144,7 @@ def build_anno_SJdb(gtfPath, chrList):
                 if info[0] in chrList and info[2] == 'exon':
                     exonStart = int(info[3])
                     exonEnd = int(info[4])
-                    transcriptID = get_transcript_ID(info[8])
+                    transcriptID = get_transcript_ID(info[8])  #  ENST00000456328.2
                     # Check if transcript is included in exons
                     if transcriptID in exons:
                         exons[transcriptID] += [(exonStart, exonEnd)]
@@ -185,13 +186,15 @@ def check_cigar(cigarString):
 def main(args):
 
     # Parse command-line arguments
-    bamPath, gtfPath, fastaPath, outfile = args.bam_path, args.gtf, args.genome_fasta, args.outdir
+    # bam文件的绝对路径       gtf文件的路径     fasta文件的路径     与bam文件同级的SJcount.txt文件
+    bamPath,                gtfPath,            fastaPath,           outfile = args.bam_path, args.gtf, args.genome_fasta, args.outdir
+   #   1             8              10            从日志文件获取          
     minOverhang, minOverhangC, minOverhangNC, filterRL = int(args.minimum_overhang_length_annotated), int(args.minimum_overhang_length_unannotated_canonical), int(args.minimum_overhang_length_unannotated_noncanonical), int(args.read_length)
     
     if os.path.exists(bamPath+'.bai') == False:
         pysam.index(bamPath)
     # Create list of target chromosomes
-    chrList = ['chrX', 'chrY']
+    chrList = ['chrX', 'chrY']   #  所有染色体的名称
     for i in range(22):
         chrList.append('chr' + str(i+1))
     
