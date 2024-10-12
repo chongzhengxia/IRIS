@@ -189,7 +189,8 @@ def main(args):
 				header_list=readEventRow(event_row,'')  
 				continue
 			line_dict=readEventRow(event_row, header_list)  #  {ID: , GeneID: , geneSymbol:, chr: , strand: , longExonStart_0base: , longExonEnd: , shrotES: , shortEE:, flankingES:, flankingEE}
-			event_row_list=convert2SJevent(line_dict, splicing_event_type)    # [单独的AS事件]
+			event_row_list=convert2SJevent(line_dict, splicing_event_type)    # ---------
+		                                                                        #[]---[]---[]
 			for k in event_row_list:     # 
 				if k not in junction_dict:
 					junction_dict[k]=''
