@@ -3,7 +3,9 @@ Screening parameter file format (take a screening task for 'Glioma_test' as an e
 ------------------------------------------------------------------------------------------------------------------------
  Glioma_test                                    # 名字应该与IRISdb的目录相同  癌症经过format储存在IRISdb
 IRIS_data/db/                                  # 到数据库的绝对路径
-0.01,0.05,1,0.000001,1 GTEx_Brain              # 要比较的正常组织 association_panel
+
+p值         deltaPSI    fc        SJC_p         
+0.01,      0.05,	1,	 ,	1 GTEx_Brain              # 要比较的正常组织 association_panel
 0.000001,0.05,1,0.000001,1 TCGA_GBM,TCGA_LGG   #                  recurrence_panel
 0.01,0.05,1,0.000001,5 GTEx_Heart,GTEx_Skin,GTEx_Blood,GTEx_Lung,GTEx_Liver,GTEx_Nerve,GTEx_Muscle,GTEx_Spleen,GTEx_Thyroid,GTEx_Kidney,GTEx_Stomach    # specificity_panel
 group parametric                               # test_mode
