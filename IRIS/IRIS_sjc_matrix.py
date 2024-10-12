@@ -37,7 +37,7 @@ def main(args):
 	
 	fname_pos=args.sample_name_field#2
 	fin_list_input=args.file_list_input
-	fin_list=loadFinlist(fin_list_input)
+	fin_list=loadFinlist(fin_list_input)  # [sample1 star_SJ文件, sample2 star_SJ文件, sample3 star_SJ文件]
 	data_name=args.data_name
 	db_dir=args.iris_db_path.rstrip('/')
 	os.system('mkdir -p '+db_dir+'/'+data_name+' '+db_dir+'/'+data_name+'/sjc_matrix')
@@ -49,13 +49,13 @@ def main(args):
 		exit('[INFO] Index finished.')
 		
 	fname_dict={}
-	for fn in fin_list:
+	for fn in fin_list:  # [sample1 star_SJ文件, sample2 star_SJ文件, sample3 star_SJ文件]
 		name=fn.split('/')[-fname_pos].split('.aln')[0]
 		if name in fname_dict:
 			print name
 			exit('dup name'+fn+' '+name)
-		fname_dict[name]=''
-	fname_list=fname_dict.keys()
+		fname_dict[name]=''  #  {sample1:'', sample2:'', sample3:''}
+	fname_list=fname_dict.keys()  # [sample1, sample2, sample3]
 	print '[INFO] Done checking file names.'
 
 	SJ_dict={}
