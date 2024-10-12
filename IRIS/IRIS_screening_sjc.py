@@ -44,16 +44,17 @@ def readEventRow(row, header_line):
 		return dict(zip(header_line, rs))
 
 def convert2SJevent(line_dict, splicing_event_type):
-	if splicing_event_type=='SE':
+	if splicing_event_type=='SE':                                                                ---------
+		# [chr:upstremEE:exonStart, chr:exonEnd:downstreameES,chr:upstreamEE:downstreamES]  []---[]---[]
 		event_row_list=[line_dict['chr']+':'+str(int(line_dict['upstreamEE'])+1)+':'+line_dict['exonStart'],line_dict['chr']+':'+str(int(line_dict['exonEnd'])+1)+':'+line_dict['downstreamES'], line_dict['chr']+':'+str(int(line_dict['upstreamEE'])+1)+':'+line_dict['downstreamES']]
 	elif splicing_event_type=='A5SS':# Only use one junction for inc. Need to improve by updating db later
 		event_row_list=[line_dict['chr']+':'+str(int(line_dict['longExonEnd'])+1)+':'+line_dict['flankingES'],line_dict['chr']+':'+str(int(line_dict['shortEE'])+1)+':'+line_dict['flankingES']]	
 	elif splicing_event_type=='A3SS': # Only use one junction for inc. Need to improve by updating db later
 		event_row_list=[line_dict['chr']+':'+str(int(line_dict['flankingEE'])+1)+':'+line_dict['longExonStart'],line_dict['chr']+':'+str(int(line_dict['flankingEE'])+1)+':'+line_dict['shortES']]	
-		
+		#  {ID: , GeneID: , geneSymbol:, chr: , strand: , longExonStart_0base: , longExonEnd: , shrotES: , shortEE:, flankingES:, flankingEE}
 	else:
 		exit('splicine event type not supported. Exiting.')
-	return event_row_list
+	return event_row_list  # [chr:flankingEE:longExonStart, chr:flankingEE:shortES]
 
 def convert2SJASevent(line_dict, splicing_event_type):
 	if splicing_event_type=='SE':
