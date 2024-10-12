@@ -50,6 +50,7 @@ def convert2SJevent(line_dict, splicing_event_type):
 		event_row_list=[line_dict['chr']+':'+str(int(line_dict['longExonEnd'])+1)+':'+line_dict['flankingES'],line_dict['chr']+':'+str(int(line_dict['shortEE'])+1)+':'+line_dict['flankingES']]	
 	elif splicing_event_type=='A3SS': # Only use one junction for inc. Need to improve by updating db later
 		event_row_list=[line_dict['chr']+':'+str(int(line_dict['flankingEE'])+1)+':'+line_dict['longExonStart'],line_dict['chr']+':'+str(int(line_dict['flankingEE'])+1)+':'+line_dict['shortES']]	
+		
 	else:
 		exit('splicine event type not supported. Exiting.')
 	return event_row_list
