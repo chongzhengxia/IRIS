@@ -12,9 +12,9 @@ def parseMappingLog(log_fin):
 
 def main(args):
 	#extractSJ_path=args.extractSJ_path
-	BAM_prefix=args.BAM_prefix
-	bam_folder_list=args.bam_folder_list
-	rl=args.rmats_used_read_length
+	BAM_prefix=args.BAM_prefix  #  'Aligned.sortedByCoord.out'
+	bam_folder_list=args.bam_folder_list  #  一个文本文件，每一行是一个bam文件的目录的路径
+	rl=args.rmats_used_read_length  #  rmats read length 默认是空，会从 star的日志中读取
 	parserl=False
 	if rl=='':
 		parserl=True
@@ -29,7 +29,7 @@ def main(args):
 		task_dir = os.getcwd()
 
 	list_name='cmdlist.extract_sjc.'+task_name
-	list_name = os.path.join(task_dir, list_name)
+	list_name = os.path.join(task_dir, list_name)  #  '/task_dir/cmdlist.extract_sjc.task_name'
 
 	n=0
 	fout=open(list_name,'w')
