@@ -13,8 +13,9 @@ def read_SJMatrix_index(fn,outdir):
 		ele = line.strip().split()
 		index[ele[0]] = int(ele[1])
 	return index
-
-def fetch_SJMatrix(eid, fn, delim, index, head_only):
+#              input_tumor中的第一个事件   input_tumor 的SJcount文件    分隔符                 {input_tumor:{AS1: offdet, AS2: offset, AS3: offset, AS5: offset},   input_tumor的值                           True
+#                                                                                               association_panel:{AS1: offdet, AS2: offset, AS3: offset, AS4: offset}}
+def fetch_SJMatrix(eid,                      fn,                        delim,                                index,                                                                                        head_only):
 	with open(fn, 'r') as f:
 		if head_only:
 			ele = f.readline().strip().split(delim)
@@ -121,35 +122,35 @@ def main(args):
 	panel_list=[out_prefix]
 
 	filter1_cutoffs, filter1_panel_list, panel_list = loadParametersRow(filter1_para, panel_list)
-	filter2_cutoffs, filter2_panel_list, panel_list = loadParametersRow(filter2_para, panel_list)
-	filter3_cutoffs, filter3_panel_list, panel_list = loadParametersRow(filter3_para, panel_list)
-	tumor_dict=dict.fromkeys(filter2_panel_list,'')
-	tumor_dict[out_prefix]=''
+	filter2_cutoffs, filter2_panel_list, panel_list = loadParametersRow(filter2_para, panel_list)  # 因为filter2_para为空，filter2_cutoffs为空字符串，filter2_panel_list也为空列表
+	filter3_cutoffs, filter3_panel_list, panel_list = loadParametersRow(filter3_para, panel_list)  # 因为filter3_para为空，filter3_cutoffs为空字符串，filter3_panel_list也为空列表，panel_list是input和三种panel名称累加的列表
+	tumor_dict=dict.fromkeys(filter2_panel_list,'')  #  {}空字典
+	tumor_dict[out_prefix]=''  #  {input_tumor: ''}
 	pvalue_cutoff_normal=''; pvalue_cutoff_tumor=''
 	filter1_group_cutoff=''; filter2_group_cutoff=''; filter3_group_cutoff='';
-	if filter1_cutoffs!='':
+	if filter1_cutoffs!='':  #  pvalue_cutoff_normal = 0.000001， filter1_group_cutoff = 1
 		pvalue_cutoff_normal,filter1_group_cutoff=filter1_cutoffs[3:]
-	if filter2_cutoffs!='':
+	if filter2_cutoffs!='':  #  只有association_panel filter2_cutoffs 为空，if语句不运行代码块
 		pvalue_cutoff_tumor,filter2_group_cutoff=filter2_cutoffs[3:]
-	if filter3_cutoffs!='':
+	if filter3_cutoffs!='':  #  只有association_panel filter3_cutoffs 为空，if语句不运行代码块
 		pvalue_cutoff_normal,filter3_group_cutoff=filter3_cutoffs[3:]
 
 	tumor_read_cov_cutoff=int(args.tumor_read_cov_cutoff)#5
 	normal_read_cov_cutoff=int(args.normal_read_cov_cutoff)#2
-	# if filter1_panel_list==[] and filter2_panel_list==[] and filter3_panel_list==[] and test_mode[0]!='summary':
-	# 	exit("[Error] No filtering required in parameteres file. exit!")
+	
 
 	##Load IRIS reference panels to 'fin_list', 'index'
-	index={}
-	fin_list={}
+	index={}  # 将input_tumor以及association panel 的AS事件和偏移量读取为键值对
+	fin_list={}  # 键包括了input_tumor以及association的panel，值inpit_tumor以及association_panel的SJcount矩阵的文件地址
 	for group_name in panel_list:
-		fin_list[group_name]=db_dir+'/'+group_name+'/sjc_matrix/SJ_count.'+group_name+'.txt'
+		fin_list[group_name]=db_dir+'/'+group_name+'/sjc_matrix/SJ_count.'+group_name+'.txt'  #  可能跟psi矩阵一样，只是把psi换成了SJ读数
 	for group in fin_list.keys():
 		if not os.path.isfile(fin_list[group]+'.idx'):
 			exit('[Error] Need to index '+fin_list[group])
 		index[group]=read_SJMatrix_index(fin_list[group],'/'.join(fin_list[group].split('/')[:-1]))
-
-
+		{input_tumor:{AS1: offdet, AS2: offset, AS3: offset, AS5: offset},
+           association_panel:{AS1: offdet, AS2: offset, AS3: offset, AS4: offset}}
+	
 	tot=config.file_len(event_list_fin)-1
 	if tot==0:
 		exit('[Ended] no test performed because no testable events. Check input or filtering parameteres.') #Modified 2021
@@ -160,12 +161,12 @@ def main(args):
 		sample_size={}
 		for group in panel_list:
 			random_key=index[group].keys()[0]
-			sample_names=map(str,fetch_SJMatrix(random_key,fin_list[group],'\t',index[group],True)[fetching_sj_col:])
+			sample_names=map(str,fetch_SJMatrix(random_key,fin_list[group],'\t',index[group],True)[fetching_sj_col:])  # [Sample1] 这是第一次循环input_tumor   [Sample1,Sample2,Sample3,Sample3,Sample4,Sample5] 这是第二此循环association_panel
 			sample_size[group]=len(sample_names)
 			if group==out_prefix:
-				header_line+=[out_prefix+'_carrier_number', out_prefix+'_fraction']
+				header_line+=[out_prefix+'_carrier_number', out_prefix+'_fraction']  # [tumor_carrier_number, tumor_fraction] 第一次循环
 				continue
-			header_line+=[group+'_carrier_number', group+'_fraction', group+'_pvalue']
+			header_line+=[group+'_carrier_number', group+'_fraction', group+'_pvalue']  # [tumor_carrier_number, tumor_fraction, association_panel_carrier_number, association_panel_fraction, association_panel_pvalue]
 		fout_sj_count.write('Junction\t'+'\t'.join(header_line)+'\n')
 	
 	header_line=[]
@@ -181,13 +182,13 @@ def main(args):
 	if use_existing_test_result==False:
 		header_list=[]
 		junction_dict={}
-		for event_idx, event_row in enumerate(open(event_list_fin)):
+		for event_idx, event_row in enumerate(open(event_list_fin)):  #event_list_fin是tumor的rmats的某个输出文件，只要包含事件就行，可能是fromGTF文件
 			if event_idx==0:
-				header_list=readEventRow(event_row,'')
+				header_list=readEventRow(event_row,'')  
 				continue
-			line_dict=readEventRow(event_row, header_list)
-			event_row_list=convert2SJevent(line_dict, splicing_event_type)
-			for k in event_row_list:
+			line_dict=readEventRow(event_row, header_list)  #  {ID: , GeneID: , geneSymbol:, chr: , strand: , longExonStart_0base: , longExonEnd: , shrotES: , shortEE:, flankingES:, flankingEE}
+			event_row_list=convert2SJevent(line_dict, splicing_event_type)    # [单独的AS事件]
+			for k in event_row_list:     # 
 				if k not in junction_dict:
 					junction_dict[k]=''
 				else:
@@ -197,7 +198,8 @@ def main(args):
 				#Initiate psi matrix by each row to 'sj' 
 				sj={}
 				for group in panel_list:
-					if k in index[group]:
+					if k in index[group]: #                {input_tumor:{AS1: offdet, AS2: offset, AS3: offset, AS5: offset},   k是AS1
+                                                                          association_panel:{AS1: offdet, AS2: offset, AS3: offset, AS4: offset}}
 						sj[group]=map(int,fetch_SJMatrix(k,fin_list[group],'\t',index[group], False)[fetching_sj_col:])
 					else:
 						sj[group]=[0]*sample_size[group]
