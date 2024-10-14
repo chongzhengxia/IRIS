@@ -132,9 +132,9 @@ def build_anno_SJdb(gtfPath, chrList):
     annoSJ = {}
     
     # Create dictionary object to store exons of a transcript 
-    exons = {}
+    exons = {}  #  {transcriptID:[(exon1Start, exon1End), (exon2Start, exon2End)]}
     # Create dictionary object to store chr of a transcript
-    chrDict = {}
+    chrDict = {}  #  {transcriptID: chr1}
     
     # Read through every line of the gtfPath
     with open(gtfPath) as f:
@@ -149,7 +149,8 @@ def build_anno_SJdb(gtfPath, chrList):
                     if transcriptID in exons:
                         exons[transcriptID] += [(exonStart, exonEnd)]
                     else:
-                        exons[transcriptID] = [(exonStart, exonEnd)]
+                        exons[transcriptID] = [(exonStart, exonEnd)]  #  {transcriptID1:[(exon1Start, exon1End), (exon2Start, exon2End)],
+                                                                      #   transcriptID2:[(exon1Start, exon1End), (exon2Start, exon2End)}
                     
                     # Check if transcript is included in chrDict
                     if transcriptID not in chrDict:
@@ -160,15 +161,16 @@ def build_anno_SJdb(gtfPath, chrList):
         chr = chrDict[transcriptID]
         
         # Sort the tuple of exons
-        exonList = sorted(exons[transcriptID])
+        exonList = sorted(exons[transcriptID])  #  [(exon1Start, exon1End), (exon2Start, exon2End)]
         
         # Build annoSJ
-        for i in range(len(exonList)-1):
+        for i in range(len(exonList)-1):  #  [0]
+            #                                 exon1End + 1    exon2Start - 1
             sjID = ':'.join(map(str,[chr, exonList[i][1]+1, exonList[i+1][0]-1]))
             if sjID not in annoSJ:
                 annoSJ[sjID] = 0
 
-    return annoSJ
+    return annoSJ  #  每个转录本的内含子的起始以及结束
 
 def write_output(sjDB, outfile):
     f = open(outfile, 'w')
@@ -202,7 +204,7 @@ def main(args):
     sjDB = {}
     
     # Create dictionary object to store all annotated SJs in the GTF
-    annoSJ = build_anno_SJdb(gtfPath, chrList)
+    annoSJ = build_anno_SJdb(gtfPath, chrList)  #  每个转录本内含子的起始以及结束位置
 
     # Open the BAM file as a SAM
     samfile = pysam.AlignmentFile(bamPath, 'rb')
