@@ -84,8 +84,9 @@ def get_threshold(chr, introns, genome, annoSJ, minOverhang, minOverhangC, minOv
         threshold = minOverhangNC
 
     return threshold
-    
-def update_SJdb(read, sjDB, annoSJ, genome, minOverhang, minOverhangC, minOverhangNC):
+
+#              每个比对信息   刚开始是空字典      每个转录本内含子的起始以及结束位置                       1                   8                        10
+def update_SJdb(read,         sjDB,              annoSJ,                            genome,          minOverhang,          minOverhangC,          minOverhangNC):
     # Get chromosome for read
     chr = read.reference_name
     
